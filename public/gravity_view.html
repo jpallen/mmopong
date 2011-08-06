@@ -3,6 +3,8 @@
 		<title>Gravity</title>
 		<script src="/javascripts/jquery-1.6.2.min.js"></script>
 		<script src="/javascripts/gravity.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="/javascripts/inputs.js"></script>
 		<style>
 			body {
 				margin: 0;
@@ -12,5 +14,14 @@
 
 	<body>
 		<canvas id="canvas" width="100%" height="100%"></canvas>
+		<script>
+			Voter.group = "all";
+			Voter.game  = "gravity";
+
+			var touchPanel = new Voter.TouchPanel({
+				element : $("body")
+			});
+		</script>
+
 	</body>
 </html>

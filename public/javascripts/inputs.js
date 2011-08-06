@@ -63,6 +63,8 @@ $.extend(Voter.TouchPanel.prototype, {
 			game  : Voter.game
 		}); 
 
+		this.mouseDown = false;
+
 		var self = this;
 		this.element.bind("mousedown", function(e) {
 			self.buttonPress(e);
@@ -70,17 +72,22 @@ $.extend(Voter.TouchPanel.prototype, {
 		this.element.bind("mouseup", function(e) {
 			self.buttonRelease(e);
 		});
+		this.element.bind("mousemove", function(e) {
+			self.move(e);
+		});
 		this.element.bind("touchstart", function(e) {
 			self.buttonPress(e);
+		});
+		this.element.bind("touchmove", function(e) {
+			self.move(e);
 		});
 		this.element.bind("touchstop", function(e) {
 			self.buttonRelease(e);
 		});
 	},
-
-	buttonPress: function(e) {
-		this.element.addClass("active");
-		var offsetX, offsetY;
+	
+	getPositionFromEvent: function(e) {
+			var offsetX, offsetY;
 		if (e.originalEvent.targetTouches) {
 			offsetX = e.originalEvent.targetTouches[0].pageX;
 			offsetY = e.originalEvent.targetTouches[0].pageY;
@@ -88,13 +95,28 @@ $.extend(Voter.TouchPanel.prototype, {
 			offsetX = e.pageX;
 			offsetY = e.pageY;
 		}
-		var x = offsetX * 100.0 / $(window).width();
-		var y = offsetY * 100.0 / $(window).height();
-		this.socket.emit("action", {state: x + ":" + y});
+		
+		return {
+			x : offsetX * 100.0 / $(window).width(),
+			y : offsetY * 100.0 / $(window).height()
+		};
+	},
+
+	buttonPress: function(e) {
+		this.mouseDown = true;
+		var pos = this.getPositionFromEvent(e);
+		this.socket.emit("action", {state: pos.x + ":" + pos.y});
+	},
+	
+	move: function(e) {
+		if (this.mouseDown) {
+			var pos = this.getPositionFromEvent(e);
+			this.socket.emit("action", {state: pos.x + ":" + pos.y})
+		}
 	},
 
 	buttonRelease: function(e) {
-		this.element.removeClass("active");
+		this.mouseDown = false;
 		this.socket.emit("action", {state: "none"});
 	},
 

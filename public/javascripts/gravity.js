@@ -30,16 +30,17 @@ $(function(){
 	}
 
 	objects = [];
-	for (var i = 0; i < 3000; i++) {	
+	for (var i = 0; i < 2000; i++) {	
 		objects.push({
 			position : [Math.random() * canvas.width,Math.random() * canvas.height],
-			velocity : [Math.random() * 1 - 0.5,Math.random() * 1 - 0.5]
+			velocity : [Math.random() * 0.2 - 0.1,Math.random() * 0.2 - 0.1]
 		});
 	}
 
-	var maxForce = 50;
-	var maxVelocity = 2.5;
+	var maxForce = 10;
+	var maxVelocity = 1.3;
 	var damping = 0.5;
+	var friction = 0.01;
 	gravityWells = [];
 
 	function gameTick() {
@@ -58,25 +59,34 @@ $(function(){
 					gravityWell.position[1] - object.position[1]
 				];
 				var distance = getLength(displacement);
-				if (distance < 10) distance = 10;
+				//if (distance < 10) distance = 10;
 				var direction = getUnitVector(displacement);
 				force[0] += direction[0] * gravityWell.strength / (distance * distance); 
 				force[1] += direction[1] * gravityWell.strength / (distance * distance);
 
-				if (force[0] > maxForce) force[0] = maxForce;
-				if (force[0] < -maxForce) force[0] = -maxForce;
-				if (force[1] > maxForce) force[1] = maxForce;
-				if (force[1] < -maxForce) force[1] = -maxForce;
+				var forceMagnitude = getLength(force);
+				if (forceMagnitude > maxForce) {
+					force[0] = force[0] / forceMagnitude * maxForce;
+					force[1] = force[1] / forceMagnitude * maxForce;
+				}
 			}
+	
+			var velocity = object.velocity;
+
+			var frictionThreshold = 0.3
+			if (velocity[0] > frictionThreshold) force[0] -= friction * velocity[0];
+			if (velocity[1] > frictionThreshold) force[1] -= friction * velocity[1];
+			if (velocity[0] < -frictionThreshold) force[0] -= friction * velocity[0];
+			if (velocity[1] < -frictionThreshold) force[1] -= friction * velocity[1];
 
 			object.velocity[0] += step * force[0];
 			object.velocity[1] += step * force[1];
-			var velocity = object.velocity;
 
-			if (velocity[0] > maxVelocity) velocity[0] = maxVelocity;
-			if (velocity[0] < -maxVelocity) velocity[0] = -maxVelocity;
-			if (velocity[1] > maxVelocity) velocity[1] = maxVelocity;
-			if (velocity[1] < -maxVelocity) velocity[1] = -maxVelocity;
+			var speed = getLength(velocity);
+			if (speed > maxSpeed) {
+				velocity[0] = velocity[0] / speed * maxSpeed;
+				velocity[1] = velocity[1] / speed * maxSpeed;
+			}
 
 			object.position[0] += step * object.velocity[0];
 			object.position[1] += step * object.velocity[1];
@@ -99,10 +109,9 @@ $(function(){
 			var colourValue = Math.log(speed + 1);
 			var maxColourValue = Math.log(maxSpeed + 1);
 			var redness = Math.floor(colourValue / maxColourValue * 255);
-			var greenness = 0;
-			ctx.fillStyle = "rgb(" + redness + "," + greenness + ",0)";
+			ctx.fillStyle = "rgb(" + redness + ",100,100)";
 	
-			drawCircle(object.position[0], object.position[1], 5);
+			drawCircle(object.position[0], object.position[1], 2);
 		}
 	};
 
@@ -121,7 +130,7 @@ $(function(){
 							var y = parseFloat(coords[1]) / 100.0;
 							gravityWells.push({
 								position : [x * canvas.width, y * canvas.height],
-								strength : 30
+								strength : 20
 							});
 						}
 					}
