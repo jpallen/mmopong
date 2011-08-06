@@ -16,11 +16,7 @@ Client.prototype.initialize = function(attributes) {
 	var self = this;
 
 	this.socket.on("action", function(data) {
-		if (data.state == "down") {
-			self.state = data.action;
-		} else if (data.state == "up" && self.state == data.action) {
-			self.state = "none";
-		}
+		self.state = data.state;
 	});
 
 	this.socket.on("addClient", function(data) {

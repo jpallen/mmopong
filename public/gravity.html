@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<title>Gravity</title>
+		<script type="text/javascript" src="/javascripts/jquery-1.6.2.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="/javascripts/inputs.js"></script>
+
+		<style>
+			body {
+				border: 1px solid black;
+				margin: 0;
+				height: 100%
+			}
+		</style>
+	</head>
+
+	<body>
+		<script>
+			Voter.group = "all";
+			Voter.game  = "gravity";
+
+			var touchPanel = new Voter.TouchPanel({
+				element : $("body")
+			});
+		</script>
+	</body>
+</html>
+
