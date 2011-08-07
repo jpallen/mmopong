@@ -13,6 +13,7 @@ $(window).resize(resizeCanvas);
 
 var tank1=[];
 var tank2=[];
+var bulletTimer=0;
 
 tank1[0]=300;
 tank1[1]=300;
@@ -22,10 +23,14 @@ tank2[0]=500;
 tank2[1]=500;
 tank2[2]=2;
 
-var bullet1=[];
-var bullet1index=0;
-var bullet2=[];
-var bullet2index=0;
+var bulletsx=[];
+var bulletsy=[];
+var bulletsang=[];
+
+bulletIndex=0;
+//var bullet1index=0;
+//var bullet2=[];
+//var bullet2index=0;
 
 //bullet1[0] = {
 //	x : 1,
@@ -43,6 +48,21 @@ function gameTick() {
 	var newTime = (new Date()).getTime();
 	var step = (newTime - prevTime);
 	prevTime = newTime;
+	bulletTimer += step;
+	
+	if (bulletTimer > 1000)
+	{
+		bulletsx[bulletIndex]=tank1[0];
+		bulletsy[bulletIndex]=tank1[1];
+		bulletsang[bulletIndex]=tank1[2];
+		
+		bulletsx[bulletIndex+1]=tank2[0];
+		bulletsy[bulletIndex+1]=tank2[1];
+		bulletsang[bulletIndex+1]=tank2[2];
+		
+		bulletIndex+=2;
+		bulletTimer=0;
+	}
 	
 	while(step > physicsTimeStep) {
 		step -= physicsTimeStep;
@@ -68,15 +88,31 @@ function gameTick() {
 	ctx.fillStyle = "green";
 	ctx.fillRect(-tankWidth/10,0,tankWidth/5,tankLength*0.9);
 	ctx.restore();
+	
+	for (var i=0;i<bulletsx.length;i++)
+	{
+		ctx.save();
+		ctx.translate(bulletsx[i],bulletsy[i]);
+		ctx.rotate(bulletsang[i]);
+		ctx.fillStyle = "white";
+		ctx.fillRect(-2/2.0,-2/2.0,2,2);
+		ctx.restore();
+	}
 }
 
 function physicsTick() {
 	var step = physicsTimeStep / 1000.0;
 	
-	tank1[0] += step * Math.cos(tank1[2]+Math.PI/2)*50;
-	tank1[1] += step * Math.sin(tank1[2]+Math.PI/2)*50;
-	tank2[0] += step * Math.cos(tank2[2]+Math.PI/2)*50;
-	tank2[1] += step * Math.sin(tank2[2]+Math.PI/2)*50;
+	tank1[0] += step * Math.cos(tank1[2]+Math.PI/2)*25;
+	tank1[1] += step * Math.sin(tank1[2]+Math.PI/2)*25;
+	tank2[0] += step * Math.cos(tank2[2]+Math.PI/2)*25;
+	tank2[1] += step * Math.sin(tank2[2]+Math.PI/2)*25;
+	
+	for (var i=0;i<bulletsx.length;i++)
+	{
+		bulletsx[i] += step * Math.cos(bulletsang[2]+Math.PI/2)*100;
+		bulletsy[i] += step * Math.sin(bulletsang[2]+Math.PI/2)*100;
+	}
 	
 }
 
@@ -116,18 +152,17 @@ $.ajax("/stream/pong", {
 		}
 		
 		if (leftBatUpCount + leftBatDownCount == 0) {
-			tank1[2] = 0;
+			tank1[2] += 0;
 		} else {
 			//leftBatPosition = leftBatDownCount / (leftBatUpCount + leftBatDownCount);
-			tank1[2] = (leftBatDownCount/leftBatCount)/2 - (leftBatUpCount/leftBatCount)/2;
+			tank1[2] += ((leftBatDownCount/leftBatCount)/2 - (leftBatUpCount/leftBatCount)/2)/5;
 		}
 		if (rightBatUpCount + rightBatDownCount == 0) {
-			tank2[2] = 0;
+			tank2[2] += 0;
 		} else {
 			//rightBatPosition = rightBatDownCount / (rightBatUpCount + rightBatDownCount);
-			tank2[2] = (rightBatDownCount/rightBatCount)/2 - (rightBatUpCount/rightBatCount)/2;
+			tank2[2] += ((rightBatDownCount/rightBatCount)/2 - (rightBatUpCount/rightBatCount)/2)/5;
 		}
-		console.log(leftBatPosition);
 	}
 });
 

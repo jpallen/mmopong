@@ -131,9 +131,10 @@ function physicsTick() {
 	}
 
 	// Is ball inside right of left paddle?
+	var beep = false;	
 	if (ballPositionNew[0] < leftBatX + batWidth/2.0 + ballRadius && ballPositionNew[0] > leftBatX - batWidth/2.0 - ballRadius &&
 	    ballPositionNew[1] < leftBatY + batHeight/2.0 + ballRadius && ballPositionNew[1] > leftBatY - batHeight/2.0 - ballRadius) {
-	    snd1.play();
+		beep =  true;
 		if (ballPosition[1] > leftBatY + batHeight/2.0 || ballPosition[1] < leftBatY - batHeight/2.0) {
 			ballVelocity[1]=-ballVelocity[1];
 		}
@@ -144,7 +145,7 @@ function physicsTick() {
 	
 	if (ballPositionNew[0] < rightBatX + batWidth/2.0 + ballRadius && ballPositionNew[0] > rightBatX - batWidth/2.0 - ballRadius &&
 	    ballPositionNew[1] < rightBatY + batHeight/2.0 + ballRadius && ballPositionNew[1] > rightBatY - batHeight/2.0 + ballRadius) {
-	    snd2.play();
+	    beep = true;
 		if (ballPosition[1] > rightBatY + batHeight/2.0 || ballPosition[1] < rightBatY - batHeight/2.0) {
 			ballVelocity[1]=-ballVelocity[1];
 		}
@@ -152,6 +153,14 @@ function physicsTick() {
 			ballVelocity[0] = -ballVelocity[0];
 		}
 	}
+	if (beep) {
+		if (Math.random() < 0.2) {
+		    snd1.play();
+		} else {
+			snd2.play();
+		}
+	}
+
 
 	if (ballPosition[0] < 0 || ballPosition[0] > canvas.width) ballVelocity[0] = -ballVelocity[0];
 	if (ballPosition[1] < 0 || ballPosition[1] > canvas.height) ballVelocity[1] = -ballVelocity[1];
