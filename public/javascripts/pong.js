@@ -137,6 +137,15 @@ function physicsTick() {
 
 	ballPosition[0] += ballVelocity[0] * step;
 	ballPosition[1] += ballVelocity[1] * step;
+
+	while((ballPosition[0] < leftBatX + batWidth/2.0 + ballRadius && ballPosition[0] > leftBatX - batWidth/2.0 - ballRadius &&
+	    ballPosition[1] < leftBatY + batHeight/2.0 + ballRadius && ballPosition[1] > leftBatY - batHeight/2.0 - ballRadius) || 
+	    (ballPosition[0] < rightBatX + batWidth/2.0 + ballRadius && ballPosition[0] > rightBatX - batWidth/2.0 - ballRadius &&
+	    ballPosition[1] < rightBatY + batHeight/2.0 + ballRadius && ballPosition[1] > rightBatY - batHeight/2.0 + ballRadius) )
+	{
+		ballPosition[0] += ballVelocity[0] * step;
+		ballPosition[1] += ballVelocity[1] * step;
+	}
 	
 }
 
