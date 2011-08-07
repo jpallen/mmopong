@@ -18,6 +18,9 @@ var physicsTimeStep = 5;
 var graphicsTimeStep = 20;
 var maxVelocity = 1;
 
+var leftBatCount      = 0;
+var rightBatCount     = 0;
+
 var leftBatPosition  = 0.5;
 var rightBatPosition = 0.5;
 var leftBatVelocity  = 0;
@@ -69,7 +72,13 @@ function gameTick() {
 
 	ctx.fillStyle = "white";
 	message="Join in at: bit.ly/leedspong and pick a side!";
+	ctx.fillStyle = "white";
 	ctx.fillText (message,canvas.width/2.0-400,canvas.height -60);
+	
+	ctx.fillText(leftBatCount,30,30);
+	ctx.fillText(rightBatCount,canvas.width-30,30);
+
+	
 }
 
 function physicsTick() {
@@ -141,6 +150,15 @@ function physicsTick() {
 
 	ballPosition[0] += ballVelocity[0] * step;
 	ballPosition[1] += ballVelocity[1] * step;
+
+	while((ballPosition[0] < leftBatX + batWidth/2.0 + ballRadius && ballPosition[0] > leftBatX - batWidth/2.0 - ballRadius &&
+	    ballPosition[1] < leftBatY + batHeight/2.0 + ballRadius && ballPosition[1] > leftBatY - batHeight/2.0 - ballRadius) || 
+	    (ballPosition[0] < rightBatX + batWidth/2.0 + ballRadius && ballPosition[0] > rightBatX - batWidth/2.0 - ballRadius &&
+	    ballPosition[1] < rightBatY + batHeight/2.0 + ballRadius && ballPosition[1] > rightBatY - batHeight/2.0 + ballRadius) )
+	{
+		ballPosition[0] += ballVelocity[0] * step;
+		ballPosition[1] += ballVelocity[1] * step;
+	}
 	
 }
 
@@ -149,8 +167,8 @@ $.ajax("/stream/pong", {
 	success: function(data) {
 		var lines = data.split("\n");
 		
-		var leftBatCount      = 0;
-		var rightBatCount     = 0;
+		leftBatCount=0;
+		rightBatCount=0;
 		
 		var leftBatUpCount    = 0;
 		var leftBatDownCount  = 0;
