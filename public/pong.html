@@ -1,43 +1,58 @@
 <html>
 	<head>
 		<title>Pong</title>
+		<meta name="viewport" content="height=device-height, initial-scale=1, maximum-scale=1">
+
+
 		<script type="text/javascript" src="/javascripts/jquery-1.6.2.min.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/javascripts/inputs.js"></script>
 
 		<style>
 			.button {
-				width: 100%;
-				height: 48%;
-
-				-moz-border-radius:6px;
-				-webkit-border-radius:6px;
-				border-radius:6px;
-				border:1px solid #84bbf3;
-				background-color: #ddf;
+				margin: auto;
+				width: 300px;
+				height: 50%;
+				border: 1px solid #555;
+				background-color: #cdf;
+				cursor: pointer;
 				user-select: none;
-				-moz-user-select: none;
 				-webkit-user-select: none;
+				
+				background-repeat: no-repeat;
+				background-position: center center;
+			}
+
+			.buttonTop {
+				background-image: url("/images/up.png");
+				border-radius: 10px 10px 0 0;
+				-webkit-border-radius: 10px 10px 0 0;
+				-moz-border-radius: 10px 10px 0 0;
+			}
+			.buttonBottom {
+				background-image: url("/images/down.png");
+				border-radius: 0 0 10px 10px;
+				-webkit-border-radius: 0 0 10px 10px;
+				-moz-border-radius: 0 0 10px 10px;
 			}
 
 			.active {
-				background-color: #bbf;
+				background-color: #88f;
 			}
-
-			.spacer {
-				height: 4%;
-				width: 100%;
-			}
+			
 		</style>
 	</head>
 
 	<body>
-		<div class="button" id="leftButton"></div>
-		<div class="spacer"></div>
-		<div class="button" id="rightButton"></div>
+		<div class="button buttonTop" id="leftButton">
+		</div>
+		<div class="button buttonBottom" id="rightButton">
+		</div>
 
 		<script>
-			if (Math.random() > 0.5) {
+			var urlParts = document.location.pathname;
+			var hash = urlParts[urlParts.length - 1];
+			if (hash == "left") {
 				Voter.group = "left_player";
 				document.title = "Pong - Left Player";
 			} else {
@@ -54,6 +69,13 @@
 				element : $("#rightButton"),
 				action  : "right"
 			});
+
+			function resize() {
+				var dim = $(document.body).height() / 2.0 - 2;
+				$('.button').css("width",  dim + "px");
+			}
+			$(window).resize(resize);
+			resize();
 		</script>
 	</body>
 </html>
