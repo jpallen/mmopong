@@ -65,6 +65,8 @@ function gameTick() {
 	ctx.textBaseline = "middle";
 	ctx.fillText (leftScore, (canvas.width/2.0)-75, 30);
 	ctx.fillText (rightScore, (canvas.width/2.0)+60, 30);
+
+	ctx.fillStyle = "white";
 	message="Join in at: bit.ly/leedspong and pick a side!";
 	ctx.fillText (message,canvas.width/2.0-400,canvas.height -60);
 }
@@ -177,7 +179,7 @@ $.ajax("/stream/pong", {
 			}
 		}
 	
-		if (true) {	
+		if (document.location.hash != "#velocity") {	
 			if (leftBatCount == 0) {
 				leftBatPosition = 0.5;
 			} else {
