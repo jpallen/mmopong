@@ -11,6 +11,9 @@ function resizeCanvas() {
 resizeCanvas();
 $(window).resize(resizeCanvas);
 
+var snd1 = new Audio("beep.mp3");
+var snd2 = new Audio("boop.mp3");
+
 var batHeight = 120;
 var batWidth  = 30
 var ballRadius = 10;
@@ -20,6 +23,11 @@ var maxVelocity = 1;
 
 var leftBatCount      = 0;
 var rightBatCount     = 0;
+var leftBatUpCount    = 0;
+var leftBatDownCount  = 0;
+var rightBatUpCount   = 0;
+var rightBatDownCount = 0;
+
 
 var leftBatPosition  = 0.5;
 var rightBatPosition = 0.5;
@@ -77,8 +85,6 @@ function gameTick() {
 	
 	ctx.fillText(leftBatCount,30,30);
 	ctx.fillText(rightBatCount,canvas.width-30,30);
-
-	
 }
 
 function physicsTick() {
@@ -127,6 +133,7 @@ function physicsTick() {
 	// Is ball inside right of left paddle?
 	if (ballPositionNew[0] < leftBatX + batWidth/2.0 + ballRadius && ballPositionNew[0] > leftBatX - batWidth/2.0 - ballRadius &&
 	    ballPositionNew[1] < leftBatY + batHeight/2.0 + ballRadius && ballPositionNew[1] > leftBatY - batHeight/2.0 - ballRadius) {
+	    snd1.play();
 		if (ballPosition[1] > leftBatY + batHeight/2.0 || ballPosition[1] < leftBatY - batHeight/2.0) {
 			ballVelocity[1]=-ballVelocity[1];
 		}
@@ -137,6 +144,7 @@ function physicsTick() {
 	
 	if (ballPositionNew[0] < rightBatX + batWidth/2.0 + ballRadius && ballPositionNew[0] > rightBatX - batWidth/2.0 - ballRadius &&
 	    ballPositionNew[1] < rightBatY + batHeight/2.0 + ballRadius && ballPositionNew[1] > rightBatY - batHeight/2.0 + ballRadius) {
+	    snd2.play();
 		if (ballPosition[1] > rightBatY + batHeight/2.0 || ballPosition[1] < rightBatY - batHeight/2.0) {
 			ballVelocity[1]=-ballVelocity[1];
 		}
@@ -167,14 +175,13 @@ $.ajax("/stream/pong", {
 	success: function(data) {
 		var lines = data.split("\n");
 		
-		leftBatCount=0;
-		rightBatCount=0;
+		leftBatCount      = 0;
+		rightBatCount     = 0;
+		leftBatUpCount    = 0;
+		leftBatDownCount  = 0;
+		rightBatUpCount   = 0;
+		rightBatDownCount = 0;
 		
-		var leftBatUpCount    = 0;
-		var leftBatDownCount  = 0;
-		var rightBatUpCount   = 0;
-		var rightBatDownCount = 0;
-
 		for(var i = 0; i < lines.length; i++) {
 			var line = lines[i];
 			var parts = line.split(",");
