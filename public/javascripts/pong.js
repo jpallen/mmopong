@@ -27,6 +27,11 @@ var leftBatY = canvas.height * leftBatPosition;
 var rightBatX = canvas.width - 40;
 var rightBatY = canvas.height * rightBatPosition;
 
+var leftScore = 0;
+var rightScore = 0;
+
+var sleepTime = 0;
+
 function gameTick() {
 	var newTime = (new Date()).getTime();
 	var step = (newTime - prevTime);
@@ -51,10 +56,20 @@ function gameTick() {
 	for (var i = 0; i<canvas.height; i+=80){
 		ctx.fillRect(canvas.width/2.0-5,i,10,40);
 	}
+
+	//Score
+	ctx.font = "bold 30px monospace";
+	ctx.textBaseline = "middle";
+	ctx.fillText (leftScore, (canvas.width/2.0)-75, 30);
+	ctx.fillText (rightScore, (canvas.width/2.0)+60, 30);
 }
 
 function physicsTick() {
 	var step = physicsTimeStep / 1000.0;
+	var newTime = (new Date()).getTime();
+
+	if (newTime < sleepTime)
+		return;
 
 	// Bats
 	leftBatX = 80;
@@ -66,6 +81,23 @@ function physicsTick() {
 
 	ballPositionNew[0] = ballPosition[0] + ballVelocity[0]*step;
 	ballPositionNew[1] = ballPosition[1] + ballVelocity[1]*step;
+
+	// Is ball off the right hand side
+	if (ballPositionNew[0] >= canvas.width) {
+		leftScore++;
+		ballPosition[0] = canvas.width/2.0;
+		ballPosition[1] = canvas.height/2.0;
+		ballVelocity[0]=-ballVelocity[0];
+		ballVelocity[1]=-ballVelocity[1];
+		sleepTime = (new Date()).getTime()+1000;
+	} else if (ballPositionNew[0] <= 0) {
+		rightScore++;
+		ballPosition[0] = canvas.width/2.0;
+		ballPosition[1] = canvas.height/2.0;
+		ballVelocity[0]=-ballVelocity[0];
+		ballVelocity[1]=-ballVelocity[1];
+		sleepTime = (new Date()).getTime()+1000;
+	}
 
 	// Is ball inside right of left paddle?
 	if (ballPositionNew[0] < leftBatX + batWidth/2.0 + ballRadius && ballPositionNew[0] > leftBatX - batWidth/2.0 - ballRadius &&
