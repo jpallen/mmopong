@@ -16,9 +16,12 @@ var batWidth  = 30
 var ballRadius = 10;
 var physicsTimeStep = 5;
 var graphicsTimeStep = 20;
+var maxVelocity = 1;
 
 var leftBatPosition  = 0.5;
 var rightBatPosition = 0.5;
+var leftBatVelocity  = 0;
+var rightBatVelocity = 0;
 var ballPosition     = [canvas.width / 2.0, canvas.height / 2.0];
 var ballVelocity     = [300, 300];
 
@@ -72,6 +75,14 @@ function physicsTick() {
 		return;
 
 	// Bats
+	leftBatPosition += leftBatVelocity * step;
+	rightBatPosition += rightBatVelocity * step;
+	if (leftBatPosition < 0) leftBatPosition = 0;
+	if (leftBatPosition > 1) leftBatPosition = 1;
+	if (rightBatPosition < 0) rightBatPosition = 0;
+	if (rightBatPosition > 1) rightBatPosition = 1;
+	
+
 	leftBatX = 80;
 	leftBatY = canvas.height * leftBatPosition;
 	rightBatX = canvas.width - 80;
@@ -163,20 +174,32 @@ $.ajax("/stream/pong", {
 				}
 			}
 		}
-		
-		if (leftBatUpCount + leftBatDownCount == 0) {
-			leftBatPosition = 0.5;
+	
+		if (true) {	
+			if (leftBatCount == 0) {
+				leftBatPosition = 0.5;
+			} else {
+				//leftBatPosition = leftBatDownCount / (leftBatUpCount + leftBatDownCount);
+				leftBatPosition = 0.5 + (leftBatDownCount/leftBatCount)/2 - (leftBatUpCount/leftBatCount)/2;
+			}
+			if (rightBatCount == 0) {
+				rightBatPosition = 0.5;
+			} else {
+				//rightBatPosition = rightBatDownCount / (rightBatUpCount + rightBatDownCount);
+				rightBatPosition = 0.5 + (rightBatDownCount/rightBatCount)/2 - (rightBatUpCount/rightBatCount)/2;
+			}
 		} else {
-			//leftBatPosition = leftBatDownCount / (leftBatUpCount + leftBatDownCount);
-			leftBatPosition = 0.5 + (leftBatDownCount/leftBatCount)/2 - (leftBatUpCount/leftBatCount)/2;
+			if (leftBatCount == 0) {
+				leftBatVelocity = 0;
+			} else {
+				leftBatVelocity = (leftBatDownCount - leftBatUpCount) / leftBatCount * maxVelocity;
+			}
+			if (rightBatCount == 0) {
+				rightBatVelocity = 0;
+			} else {
+				rightBatVelocity = (rightBatDownCount - rightBatUpCount) / rightBatCount * maxVelocity;
+			}
 		}
-		if (rightBatUpCount + rightBatDownCount == 0) {
-			rightBatPosition = 0.5;
-		} else {
-			//rightBatPosition = rightBatDownCount / (rightBatUpCount + rightBatDownCount);
-			rightBatPosition = 0.5 + (rightBatDownCount/rightBatCount)/2 - (rightBatUpCount/rightBatCount)/2;
-		}
-		console.log(leftBatPosition);
 	}
 });
 
