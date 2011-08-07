@@ -21,6 +21,7 @@ var leftBatPosition  = 0.5;
 var rightBatPosition = 0.5;
 var ballPosition     = [canvas.width / 2.0, canvas.height / 2.0];
 var ballVelocity     = [300, 300];
+var ballSpeed	     = 424
 
 var leftBatX = 40;
 var leftBatY = canvas.height * leftBatPosition;
@@ -85,15 +86,15 @@ function physicsTick() {
 	// Is ball off the right hand side
 	if (ballPositionNew[0] >= canvas.width) {
 		leftScore++;
-		ballPosition[0] = canvas.width/2.0;
-		ballPosition[1] = canvas.height/2.0;
+		ballPosition[0] = canvas.width/2.0 - Math.floor(Math.random()*41);
+		ballPosition[1] = canvas.height/2.0 - Math.floor(Math.random()*41);
 		ballVelocity[0]=-ballVelocity[0];
 		ballVelocity[1]=-ballVelocity[1];
 		sleepTime = (new Date()).getTime()+1000;
 	} else if (ballPositionNew[0] <= 0) {
 		rightScore++;
-		ballPosition[0] = canvas.width/2.0;
-		ballPosition[1] = canvas.height/2.0;
+		ballPosition[0] = canvas.width/2.0 + Math.floor(Math.random()*41);
+		ballPosition[1] = canvas.height/2.0 + Math.floor(Math.random()*41);
 		ballVelocity[0]=-ballVelocity[0];
 		ballVelocity[1]=-ballVelocity[1];
 		sleepTime = (new Date()).getTime()+1000;
