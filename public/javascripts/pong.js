@@ -39,7 +39,7 @@ function gameTick() {
 
 	// Draw the fucker
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillStyle = "green";
+	ctx.fillStyle = "limegreen";
 
 	ctx.fillRect(leftBatX - batWidth/2.0, leftBatY - batHeight/2.0, batWidth, batHeight);
 	ctx.fillRect(rightBatX - batWidth/2.0, canvas.height * rightBatPosition - batHeight/2.0, batWidth, batHeight);
@@ -47,32 +47,52 @@ function gameTick() {
 	// Ball
 	ctx.fillRect(ballPosition[0] - ballRadius, ballPosition[1] - ballRadius, ballRadius * 2, ballRadius * 2);
 
+	// Net
+	for (var i = 0; i<canvas.height; i+=80){
+		ctx.fillRect(canvas.width/2.0-5,i,10,40);
+	}
 }
 
 function physicsTick() {
 	var step = physicsTimeStep / 1000.0;
 
-	ballPosition[0] += ballVelocity[0] * step;
-	ballPosition[1] += ballVelocity[1] * step;
+	// Bats
+	leftBatX = 80;
+	leftBatY = canvas.height * leftBatPosition;
+	rightBatX = canvas.width - 80;
+	rightBatY = canvas.height * rightBatPosition;
+
+	var ballPositionNew=[];
+
+	ballPositionNew[0] = ballPosition[0] + ballVelocity[0]*step;
+	ballPositionNew[1] = ballPosition[1] + ballVelocity[1]*step;
+
+	// Is ball inside right of left paddle?
+	if (ballPositionNew[0] < leftBatX + batWidth/2.0 + ballRadius && ballPositionNew[0] > leftBatX - batWidth/2.0 - ballRadius &&
+	    ballPositionNew[1] < leftBatY + batHeight/2.0 + ballRadius && ballPositionNew[1] > leftBatY - batHeight/2.0 - ballRadius) {
+		if (ballPosition[1] > leftBatY + batHeight/2.0 || ballPosition[1] < leftBatY - batHeight/2.0) {
+			ballVelocity[1]=-ballVelocity[1];
+		}
+		else{
+			ballVelocity[0] = -ballVelocity[0];
+		}
+	}
+	
+	if (ballPositionNew[0] < rightBatX + batWidth/2.0 + ballRadius && ballPositionNew[0] > rightBatX - batWidth/2.0 - ballRadius &&
+	    ballPositionNew[1] < rightBatY + batHeight/2.0 + ballRadius && ballPositionNew[1] > rightBatY - batHeight/2.0 + ballRadius) {
+		if (ballPosition[1] > rightBatY + batHeight/2.0 || ballPosition[1] < rightBatY - batHeight/2.0) {
+			ballVelocity[1]=-ballVelocity[1];
+		}
+		else{
+			ballVelocity[0] = -ballVelocity[0];
+		}
+	}
 
 	if (ballPosition[0] < 0 || ballPosition[0] > canvas.width) ballVelocity[0] = -ballVelocity[0];
 	if (ballPosition[1] < 0 || ballPosition[1] > canvas.height) ballVelocity[1] = -ballVelocity[1];
 
-	// Bats
-	leftBatX = 40;
-	leftBatY = canvas.height * leftBatPosition;
-	rightBatX = canvas.width - 40;
-	rightBatY = canvas.height * rightBatPosition;
-
-	// Is ball inside right of left paddle?
-	if (ballPosition[0] < leftBatX + batWidth / 2.0 && ballPosition[0] > leftBatX - batWidth / 2.0 &&
-	    ballPosition[1] < leftBatY + batHeight / 2.0 && ballPosition[1] > leftBatY - batHeight / 2.0) {
-		ballVelocity[0] = -ballVelocity[0];
-	}
-	if (ballPosition[0] < rightBatX + batWidth / 2.0 && ballPosition[0] > rightBatX - batWidth / 2.0 &&
-	    ballPosition[1] < rightBatY + batHeight / 2.0 && ballPosition[1] > rightBatY - batHeight / 2.0) {
-		ballVelocity[0] = -ballVelocity[0];
-	}
+	ballPosition[0] += ballVelocity[0] * step;
+	ballPosition[1] += ballVelocity[1] * step;
 	
 }
 
@@ -80,6 +100,10 @@ function updatePositions() {
 $.ajax("/stream/pong", {
 	success: function(data) {
 		var lines = data.split("\n");
+		
+		var leftBatCount      = 0;
+		var rightBatCount     = 0;
+		
 		var leftBatUpCount    = 0;
 		var leftBatDownCount  = 0;
 		var rightBatUpCount   = 0;
@@ -89,6 +113,7 @@ $.ajax("/stream/pong", {
 			var line = lines[i];
 			var parts = line.split(",");
 			if (parts[0] == "left_player") {
+				leftBatCount++;
 				if (parts[2] == "left") {
 					leftBatUpCount += 1;
 				}
@@ -97,6 +122,7 @@ $.ajax("/stream/pong", {
 				}
 			}
 			if (parts[0] == "right_player") {
+				rightBatCount++;
 				if (parts[2] == "left") {
 					rightBatUpCount += 1;
 				}
@@ -105,15 +131,18 @@ $.ajax("/stream/pong", {
 				}
 			}
 		}
+		
 		if (leftBatUpCount + leftBatDownCount == 0) {
 			leftBatPosition = 0.5;
 		} else {
-			leftBatPosition = leftBatDownCount / (leftBatUpCount + leftBatDownCount);
+			//leftBatPosition = leftBatDownCount / (leftBatUpCount + leftBatDownCount);
+			leftBatPosition = 0.5 + (leftBatDownCount/leftBatCount)/2 - (leftBatUpCount/leftBatCount)/2;
 		}
 		if (rightBatUpCount + rightBatDownCount == 0) {
 			rightBatPosition = 0.5;
 		} else {
-			rightBatPosition = rightBatDownCount / (rightBatUpCount + rightBatDownCount);
+			//rightBatPosition = rightBatDownCount / (rightBatUpCount + rightBatDownCount);
+			rightBatPosition = 0.5 + (rightBatDownCount/rightBatCount)/2 - (rightBatUpCount/rightBatCount)/2;
 		}
 		console.log(leftBatPosition);
 	}
