@@ -17,6 +17,9 @@ var ballRadius = 10;
 var physicsTimeStep = 5;
 var graphicsTimeStep = 20;
 
+var leftBatCount      = 0;
+var rightBatCount     = 0;
+
 var leftBatPosition  = 0.5;
 var rightBatPosition = 0.5;
 var ballPosition     = [canvas.width / 2.0, canvas.height / 2.0];
@@ -64,7 +67,13 @@ function gameTick() {
 	ctx.fillText (leftScore, (canvas.width/2.0)-75, 30);
 	ctx.fillText (rightScore, (canvas.width/2.0)+60, 30);
 	message="Join in at: bit.ly/leedspong and pick a side!";
+	ctx.fillStyle = "white";
 	ctx.fillText (message,canvas.width/2.0-400,canvas.height -60);
+	
+	ctx.fillText(leftBatCount,30,30);
+	ctx.fillText(rightBatCount,canvas.width-30,30);
+
+	
 }
 
 function physicsTick() {
@@ -136,8 +145,8 @@ $.ajax("/stream/pong", {
 	success: function(data) {
 		var lines = data.split("\n");
 		
-		var leftBatCount      = 0;
-		var rightBatCount     = 0;
+		leftBatCount=0;
+		rightBatCount=0;
 		
 		var leftBatUpCount    = 0;
 		var leftBatDownCount  = 0;
