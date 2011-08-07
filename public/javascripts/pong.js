@@ -13,6 +13,7 @@ $(window).resize(resizeCanvas);
 
 var snd1 = new Audio("beep.mp3");
 var snd2 = new Audio("boop.mp3");
+var snd3 = new Audio("yay.mp3");
 
 var batHeight = 120;
 var batWidth  = 30
@@ -91,9 +92,6 @@ function physicsTick() {
 	var step = physicsTimeStep / 1000.0;
 	var newTime = (new Date()).getTime();
 
-	if (newTime < sleepTime)
-		return;
-
 	// Bats
 	leftBatPosition += leftBatVelocity * step;
 	rightBatPosition += rightBatVelocity * step;
@@ -110,11 +108,14 @@ function physicsTick() {
 
 	var ballPositionNew=[];
 
-	ballPositionNew[0] = ballPosition[0] + ballVelocity[0]*step;
-	ballPositionNew[1] = ballPosition[1] + ballVelocity[1]*step;
+	if (newTime  < sleepTime) { return; }
+
+		ballPositionNew[0] = ballPosition[0] + ballVelocity[0]*step;
+		ballPositionNew[1] = ballPosition[1] + ballVelocity[1]*step;
 
 	// Is ball off the right hand side
 	if (ballPositionNew[0] >= canvas.width) {
+//		snd3.play();
 		leftScore++;
 		ballPosition[0] = canvas.width/2.0 - Math.floor(Math.random()*41);
 		ballPosition[1] = canvas.height/2.0 - Math.floor(Math.random()*41);
@@ -122,6 +123,7 @@ function physicsTick() {
 		ballVelocity[1]=-ballVelocity[1];
 		sleepTime = (new Date()).getTime()+1000;
 	} else if (ballPositionNew[0] <= 0) {
+//		snd3.play();
 		rightScore++;
 		ballPosition[0] = canvas.width/2.0 + Math.floor(Math.random()*41);
 		ballPosition[1] = canvas.height/2.0 + Math.floor(Math.random()*41);
