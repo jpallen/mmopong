@@ -63,6 +63,8 @@ function gameTick() {
 	ctx.textBaseline = "middle";
 	ctx.fillText (leftScore, (canvas.width/2.0)-75, 30);
 	ctx.fillText (rightScore, (canvas.width/2.0)+60, 30);
+	message="Join in at: bit.ly/leedspong and pick a side!";
+	ctx.fillText (message,canvas.width/2.0-400,canvas.height -60);
 }
 
 function physicsTick() {
